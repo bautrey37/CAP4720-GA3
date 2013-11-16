@@ -17,21 +17,25 @@
 <canvas id="myCanvas1" ></canvas>
 <div id="toolbar">
     <h1>Project 3</h1>
-    <br><strong>Model List: </strong><select id="modelList" onchange="newModelFlag=true;">
-        <option selected="selected" value="teapot">Teapot</option>
-        <option value="skull">Skull</option>
-        <option value="House">House</option>
-    </select>
-    <br><strong>Cube Map List: </strong><select id="mapList" onchange="newCubeMapFlag=true" >
-        <option value="skybox">Sky</option>
-        <option value="NiagaraFalls2">Niagara Falls</option>
-        <option value="NissiBeach2">Nissi Beach</option>
-        <option value="PereaBeach2">PereaBeach2</option>
-        <option value="Tallinn">Tallinn</option>
-    </select>
-    <br><strong>Dolly: </strong><input type='button' value='+' onclick="dollyRequired=1;"/>
-    <input type='button' value='-' onclick="dollyRequired=-1;"/>
-    <br><strong>Rotate: </strong><input type='button' value='Toggle' onclick="toggleRotateFlag();"/>
+    <br><strong> Sun <span id="sunNum">32</span></strong><br/>
+    <input type="range" name="sun" id="sun" min="0" max="180" step="1.0" value="32" class="slider"
+           onchange="changeSun(value)"/><br/>
+
+    <br><strong>Flood: </strong><input type="button" id="flood" value="Toggle" onclick="toggleFloodFlag();" />
+    <br><br>
+    <strong>Controls</strong>
+    <ul>
+        <li>Left Arrow - Look left</li>
+        <li>Right Arrow - Look right</li>
+        <li>Up Arrow - Look up</li>
+        <li>Down Arrow - Look down</li>
+        <li>W Key - Move Up</li>
+        <li>A Key - Move Left</li>
+        <li>S Key - Move Down</li>
+        <li>D Key - Move Right</li>
+        <li>R Key - Move Forward</li>
+        <li>F Key - Move Backwards</li>
+    </ul>
 </div>
 </body>
 </html>

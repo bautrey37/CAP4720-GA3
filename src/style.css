@@ -14,8 +14,13 @@
     top: 0;
     right: 0;
 }
+
 .slider {
     width: 100%;
+}
+
+.button {
+    width: 50px;
 }
 
 body {
