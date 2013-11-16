@@ -37,23 +37,29 @@ function main() {
     canvas.height = window.innerHeight;
     gl = getWebGLContext(canvas, false);//Disable debugging
 
-	var keys = [];
-	var i = 0;
+    var keys = [];
+    var i = 0;
+    // Set up key listeners to move through the world.
+    document.body.addEventListener("keydown", function (e) {
+        keys[e.keyCode] = true;
+    });
+    document.body.addEventListener("keyup", function (e) {
+        keys[e.keyCode] = false;
+    });
+
 	
     program = createShaderProgram(gl);
     gl.clearColor(0, 0, 0, 1);
     gl.enable(gl.DEPTH_TEST);
-    newModel();
+
+    var scene = new Scene(gl);
+    initModels();
     draw();
 
-	 // Set up key listeners to move through the world.
-	document.body.addEventListener("keydown", function (e) {
-		keys[e.keyCode] = true;
-	});
-	document.body.addEventListener("keyup", function (e) {
-		keys[e.keyCode] = false;
-	});
-	
+    function initModels() {
+        newModel("Shrine", 0, 0);
+        //and other models
+    }
 
     function draw() {
         gl.useProgram(program);
@@ -68,7 +74,8 @@ function main() {
 		}
 		i++;
         gl.uniformMatrix4fv(program.uniformLocations["viewT"], false, viewMatrix.elements);
-        model.draw();
+        //model.draw();
+        scene.draw();
 
         gl.useProgram(null);
 
@@ -91,15 +98,13 @@ function main() {
     /**
      * loads in new model, will specify position here
      */
-    function newModel() {
-        if (model) model.delete();
-        var path = "House";
-        //console.log(path);
+    function newModel(path, xLoc, zLoc) {
         model = new JsonRenderable(gl, program, "../model/" + path + "/models/", "model.json");
         if (!model)alert("No model could be read");
         var bounds = model.getBounds();
         camera = new Camera(gl, bounds, [0, 1, 0]);
         viewMatrix = camera.getViewMatrix();
         projMatrix = camera.getProjMatrix(fov);
+        scene.addModel(model, xLoc, zLoc);
     }
 }
