@@ -53,7 +53,7 @@ function main() {
     gl.clearColor(0, 0, 0, 1);
     gl.enable(gl.DEPTH_TEST);
 
-    var scene = new Scene(gl);
+    var scene = new Scene();
     var dim = {};
     dim.min = [-1, -1, -1];
     dim.max = [1, 1, 1];
