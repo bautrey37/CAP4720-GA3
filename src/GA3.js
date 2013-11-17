@@ -20,6 +20,15 @@ function changeSun(value) {
     document.getElementById("myCanvas1").focus();
     document.getElementById("sun").blur();
 }
+/*
+function resetCamera() {
+    var dim = {};
+    dim.min = [-1, -1, -1];
+    dim.max = [1, 1, 1];
+    camera = new Camera(gl, dim, [0, 1, 0]);
+    document.getElementById("myCanvas1").focus();
+    document.getElementById("camReset").blur();
+}*/
 
 function addMessage(message) {
     console.log(message);
@@ -29,7 +38,7 @@ function main() {
     // ... global variables ...
     var gl, canvas, model, camera, program;
     var projMatrix, viewMatrix;
-    var fov = 32;
+    var fov = 20;
 
     canvas = document.getElementById("myCanvas1");
     //addMessage(((canvas)?"Canvas acquired":"Error: Can not acquire canvas"));
@@ -53,11 +62,24 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
 
     var scene = new Scene(gl);
+    var dim = {};
+    dim.min = [-1, -1, -1];
+    dim.max = [1, 1, 1];
+    camera = new Camera(gl, dim, [0, 1, 0]);
+    viewMatrix = camera.getViewMatrix();
+    projMatrix = camera.getProjMatrix(fov);
     initModels();
     draw();
 
     function initModels() {
-        newModel("Shrine", 0, 0);
+//        newModel("Shrine", 0.001, 0);
+        newModel("dabrovic-sponza", [0, 0, -2.0], 2);
+        newModel("House", [0.8, -1.5, 0], 0.5);
+        newModel("House", [-0.8, -1.5, 0], 0.5);
+        newModel("House", [0.8, 1, 0], 0.5);
+        newModel("House", [-0.8, 1, 0], 0.5);
+        //newModel("House", 0.001, 0);
+        //newModel("House", 0.1, 0);
         //and other models
     }
 
@@ -65,6 +87,7 @@ function main() {
         gl.useProgram(program);
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        projMatrix = camera.getProjMatrix(fov);
         gl.uniformMatrix4fv(program.uniformLocations["projT"], false, projMatrix.elements);
 		
 		// Update camera position based on key presses every two loops.
@@ -81,7 +104,7 @@ function main() {
 
         window.requestAnimationFrame(draw);
     }
-	
+
 	function updateCameraPos() {
 		if (keys[37]) viewMatrix = camera.panLeft();
 		if (keys[39]) viewMatrix = camera.panRight();
@@ -98,13 +121,9 @@ function main() {
     /**
      * loads in new model, will specify position here
      */
-    function newModel(path, xLoc, zLoc) {
+    function newModel(path, dim, relSize) {
         model = new JsonRenderable(gl, program, "../model/" + path + "/models/", "model.json");
         if (!model)alert("No model could be read");
-        var bounds = model.getBounds();
-        camera = new Camera(gl, bounds, [0, 1, 0]);
-        viewMatrix = camera.getViewMatrix();
-        projMatrix = camera.getProjMatrix(fov);
-        scene.addModel(model, xLoc, zLoc);
+        scene.addModel(model, dim, relSize);
     }
 }

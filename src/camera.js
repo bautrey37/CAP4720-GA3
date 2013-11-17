@@ -6,7 +6,7 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
     var at = center;
     var eye = [center[0], center[1] + diagonal * 0.5, center[2] + diagonal * 1.5];
     var up = [modelUp[0], modelUp[1], modelUp[2]];
-    var fov = 32, near = diagonal*0.1, far = diagonal*10;
+    var fov, near = diagonal*0.1, far = diagonal*20;
     var tiltAngle = 0;
     addMessage(at);
 
