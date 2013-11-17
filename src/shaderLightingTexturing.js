@@ -1,49 +1,17 @@
 "use strict";
 function createShaderProgram(gl) {
-    //var VSHADER_SOURCE = null;
-    //var FSHADER_SOURCE = null;
-
-    var VSHADER_SOURCE =
-        'attribute vec3 position;\n' +
-        'attribute vec3 normal;\n' +
-        'attribute vec2 texCoord;\n' +
-        'uniform mat4 projT, viewT, modelT, normalT;\n' +
-        'varying vec2 tCoord;\n' +
-        'varying vec3 fragPosition, fragNormal;\n' +
-        'void main() {\n' +
-        '  fragPosition = (viewT * modelT * vec4(position, 1.0)).xyz;\n' +
-        '  fragNormal = normalize((viewT * normalT * vec4(normal, 0.0)).xyz);\n' +
-        '  tCoord = texCoord;\n' +
-        '  gl_Position = projT * viewT * modelT * vec4(position, 1.0);\n' +
-        '}\n';
-
-    // Fragment shader program
-    var FSHADER_SOURCE =
-        'precision mediump float;\n' +
-        'uniform vec3 lightPosition;\n' +
-        'uniform vec3 ambient;\n' +
-        'uniform vec3 diffuseCoeff;\n' +
-        'uniform sampler2D diffuseTex;\n' +
-        'uniform int texturingEnabled;\n' +
-        'varying vec2 tCoord;\n' +
-        'varying vec3 fragPosition, fragNormal;\n' +
-        'void main() {\n' +
-        '  float costheta = max(dot(normalize(-fragPosition), normalize(fragNormal)), 0.0);\n' +
-        '  vec3 texColor = (texturingEnabled == 0) ? vec3(1.0) : texture2D(diffuseTex, tCoord).rgb;\n' +
-        '  gl_FragColor = vec4(texColor * diffuseCoeff * costheta + ambient, 1.0);\n' +
-        '}\n';
-
-    //not done yet
-    function loadShaderFile(fileName, shader) {
+    //get text from shader file
+    function loadShaderFile(fileName) {
         var request = new XMLHttpRequest();
-        request.onreadystatechange = function() {
-
-        }
-        request.open('GET', fileName, true);
-        request.send();
+        request.open('GET', fileName, false);
+        request.send(null);
+        return request.responseText;
     }
 
+    var VSHADER_SOURCE = loadShaderFile("shader_vertex.glsl");
+    var FSHADER_SOURCE = loadShaderFile("shader_fragment.glsl");
     var program = createProgram(gl, VSHADER_SOURCE, FSHADER_SOURCE);
+
     if (!program) {
         console.log('Failed to create program');
         return false;
