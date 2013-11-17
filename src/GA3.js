@@ -114,8 +114,8 @@ function main() {
     }
 
 	function updateCameraPos() {
-		if (keys[37]) viewMatrix = camera.panLeft(0.7);
-		if (keys[39]) viewMatrix = camera.panRight(-0.7);
+		if (keys[37]) viewMatrix = camera.panLeft(1.0);
+		if (keys[39]) viewMatrix = camera.panRight(-1.0);
 		if (keys[38]) viewMatrix = camera.tiltUp(0.5);
 		if (keys[40]) viewMatrix = camera.tiltDown(-0.5);
 		if (keys[65]) viewMatrix = camera.truckLeft(0.02);
