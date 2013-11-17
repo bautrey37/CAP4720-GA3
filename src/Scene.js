@@ -23,12 +23,6 @@ function Scene(gl) {
             0, 0, 0, 1
         ]);*/
         mMatrix.setScale(scale,scale,scale);
-        addMessage(bounds.min);
-        addMessage(bounds.max);
-        addMessage(scale);
-        addMessage(x);
-        addMessage(y);
-        addMessage(z);
 
         models.push({mMatrix: mMatrix, Translate:[x*dim[0], y*dim[1], z*dim[2]], model: model});
     };

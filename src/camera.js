@@ -8,7 +8,7 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
     var up = [modelUp[0], modelUp[1], modelUp[2]];
     var fov, near = diagonal*0.1, far = diagonal*20;
     var tiltAngle = 0;
-    addMessage(at);
+    //addMessage(at);
 
 
     this.getViewMatrix = function (e) {

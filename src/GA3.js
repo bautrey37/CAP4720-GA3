@@ -7,6 +7,7 @@
 
 var floodFlag = true;
 var sunAngle = 32; //degrees
+var cameraFlag = false;
 
 function toggleFloodFlag() {
     floodFlag = !floodFlag;
@@ -20,15 +21,6 @@ function changeSun(value) {
     document.getElementById("myCanvas1").focus();
     document.getElementById("sun").blur();
 }
-/*
-function resetCamera() {
-    var dim = {};
-    dim.min = [-1, -1, -1];
-    dim.max = [1, 1, 1];
-    camera = new Camera(gl, dim, [0, 1, 0]);
-    document.getElementById("myCanvas1").focus();
-    document.getElementById("camReset").blur();
-}*/
 
 function addMessage(message) {
     console.log(message);
@@ -85,8 +77,14 @@ function main() {
 
     function draw() {
         gl.useProgram(program);
-
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        if(cameraFlag) {
+            addMessage("camera");
+            camera = resetCamera();
+            viewMatrix = camera.getViewMatrix();
+            cameraFlag = false;
+        }
+
         projMatrix = camera.getProjMatrix(fov);
         gl.uniformMatrix4fv(program.uniformLocations["projT"], false, projMatrix.elements);
 		
@@ -103,6 +101,16 @@ function main() {
         gl.useProgram(null);
 
         window.requestAnimationFrame(draw);
+    }
+
+    function resetCamera() {
+        var dim = {};
+        dim.min = [-1, -1, -1];
+        dim.max = [1, 1, 1];
+        var camera = new Camera(gl, dim, [0, 1, 0]);
+        document.getElementById("myCanvas1").focus();
+        document.getElementById("camReset").blur();
+        return camera;
     }
 
 	function updateCameraPos() {
