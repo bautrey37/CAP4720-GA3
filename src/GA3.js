@@ -89,7 +89,7 @@ function main() {
         gl.uniformMatrix4fv(program.uniformLocations["projT"], false, projMatrix.elements);
 		
 		// Update camera position based on key presses every two loops.
-		if (i == 2) {
+		if (i == 1) {
 			i=0;
 			updateCameraPos();
 		}
@@ -114,16 +114,16 @@ function main() {
     }
 
 	function updateCameraPos() {
-		if (keys[37]) viewMatrix = camera.panLeft();
-		if (keys[39]) viewMatrix = camera.panRight();
-		if (keys[38]) viewMatrix = camera.tiltUp();
-		if (keys[40]) viewMatrix = camera.tiltDown();
-		if (keys[65]) viewMatrix = camera.truckLeft();
-		if (keys[68]) viewMatrix = camera.truckRight();
-		if (keys[82]) viewMatrix = camera.dollyToward();
-		if (keys[70]) viewMatrix = camera.dollyBack();
-		if (keys[87]) viewMatrix = camera.pedestalUp();
-		if (keys[83]) viewMatrix = camera.pedestalDown();
+		if (keys[37]) viewMatrix = camera.panLeft(0.7);
+		if (keys[39]) viewMatrix = camera.panRight(-0.7);
+		if (keys[38]) viewMatrix = camera.tiltUp(0.5);
+		if (keys[40]) viewMatrix = camera.tiltDown(-0.5);
+		if (keys[65]) viewMatrix = camera.truckLeft(0.02);
+		if (keys[68]) viewMatrix = camera.truckRight(0.02);
+		if (keys[82]) viewMatrix = camera.dollyToward(0.02);
+		if (keys[70]) viewMatrix = camera.dollyBack(0.02);
+		if (keys[87]) viewMatrix = camera.pedestalUp(0.01);
+		if (keys[83]) viewMatrix = camera.pedestalDown(0.01);
 	}
 
     /**

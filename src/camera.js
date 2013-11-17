@@ -28,12 +28,12 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
         return new Matrix4().setPerspective(fov, gl.canvas.width / gl.canvas.height, near, far);
     };
     // User pressed left arrow. Pan (Look left)
-    this.panLeft = function () {
+    this.panLeft = function (deg) {
         var m = this.getViewMatrix();
         // Get the camera's local y-axis (V-axis).
         var v = [m.elements[1], m.elements[5], m.elements[9]];
-        // Rotate matrix by one degree.
-        var rotM = new Matrix4().setTranslate(eye[0], eye[1], eye[2]).rotate(1.5, v[0], v[1], v[2]).translate(-eye[0], -eye[1], -eye[2]);
+        // Rotate matrix.
+        var rotM = new Matrix4().setTranslate(eye[0], eye[1], eye[2]).rotate(deg, v[0], v[1], v[2]).translate(-eye[0], -eye[1], -eye[2]);
         // Multiply by old at vector.
         var newAt = rotM.multiplyVector4(new Vector4([at[0], at[1], at[2], 1]));
         at[0] = newAt.elements[0];
@@ -44,12 +44,12 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
         return this.getViewMatrix();
     };
     // User pressed right arrow. Pan (Look right)
-    this.panRight = function () {
+    this.panRight = function (deg) {
         var m = this.getViewMatrix();
         // Get the camera's local y-axis (-axis).
         var v = [m.elements[1], m.elements[5], m.elements[9]];
-        // Rotate matrix by one degree.
-        var rotM = new Matrix4().setTranslate(eye[0], eye[1], eye[2]).rotate(-1.5, v[0], v[1], v[2]).translate(-eye[0], -eye[1], -eye[2]);
+        // Rotate matrix.
+        var rotM = new Matrix4().setTranslate(eye[0], eye[1], eye[2]).rotate(deg, v[0], v[1], v[2]).translate(-eye[0], -eye[1], -eye[2]);
         // Multiply by old at vector.
         var newAt = rotM.multiplyVector4(new Vector4([at[0], at[1], at[2], 1]));
         at[0] = newAt.elements[0];
@@ -60,7 +60,7 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
         return this.getViewMatrix();
     };
     // User pressed up arrow. Tilt (Look up)
-    this.tiltUp = function () {
+    this.tiltUp = function (deg) {
         // Do not allow unlimited tilting.
         if (tiltAngle < 90) {
             tiltAngle++;
@@ -68,8 +68,8 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
             var m = this.getViewMatrix();
             // Get the camera's local x-axis (U-axis).
             var u = [m.elements[0], m.elements[4], m.elements[8]];
-            // Rotate matrix by one degree.
-            var rotM = new Matrix4().setTranslate(eye[0], eye[1], eye[2]).rotate(1, u[0], u[1], u[2]).translate(-eye[0], -eye[1], -eye[2]);
+            // Rotate matrix.
+            var rotM = new Matrix4().setTranslate(eye[0], eye[1], eye[2]).rotate(deg, u[0], u[1], u[2]).translate(-eye[0], -eye[1], -eye[2]);
             // Multiply by old at vector.
             var newAt = rotM.multiplyVector4(new Vector4([at[0], at[1], at[2], 1]));
             at[0] = newAt.elements[0];
@@ -80,7 +80,7 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
         return this.getViewMatrix();
     };
     // User pressed down arrow. Tilt (Look down)
-    this.tiltDown = function () {
+    this.tiltDown = function (deg) {
         // Do not allow unlimited tilting.
         if (tiltAngle > -90) {
             tiltAngle--;
@@ -88,8 +88,8 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
             var m = this.getViewMatrix();
             // Get the camera's local x-axis (U-axis).
             var u = [m.elements[0], m.elements[4], m.elements[8]];
-            // Rotate matrix by one degree.
-            var rotM = new Matrix4().setTranslate(eye[0], eye[1], eye[2]).rotate(-1, u[0], u[1], u[2]).translate(-eye[0], -eye[1], -eye[2]);
+            // Rotate matrix.
+            var rotM = new Matrix4().setTranslate(eye[0], eye[1], eye[2]).rotate(deg, u[0], u[1], u[2]).translate(-eye[0], -eye[1], -eye[2]);
             // Multiply by old at vector.
             var newAt = rotM.multiplyVector4(new Vector4([at[0], at[1], at[2], 1]));
             at[0] = newAt.elements[0];
@@ -100,8 +100,8 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
         return this.getViewMatrix();
     };
     // User pressed 'a' key. Truck (Step left)
-    this.truckLeft = function () {
-        var delta = diagonal * 0.05;
+    this.truckLeft = function (mov) {
+        var delta = diagonal * mov;
         var m = this.getViewMatrix();
         // Get the camera's local x-axis (U-axis).
         var u = [m.elements[0], m.elements[4], m.elements[8]];
@@ -124,8 +124,8 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
         return this.getViewMatrix();
     };
     // User pressed 'd' key. Truck (Step right)
-    this.truckRight = function () {
-        var delta = diagonal * 0.05;
+    this.truckRight = function (mov) {
+        var delta = diagonal * mov;
         var m = this.getViewMatrix();
         // Get the camera's local x-axis (U-axis).
         var u = [m.elements[0], m.elements[4], m.elements[8]];
@@ -149,8 +149,7 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
     };
 
     // User pressed 'r' key. Dolly (Step in)
-    this.dollyToward = function () {
-        var delta = .02;
+    this.dollyToward = function (delta) {
         var w = [eye[0] - at[0], eye[1] - at[1], eye[2] - at[2]];
         var newEye = new Matrix4()
             .setTranslate(-w[0] * delta, -w[1] * delta, -w[2] * delta)
@@ -170,8 +169,7 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
     };
 
     // User pressed 'f' key. Dolly (Step back)
-    this.dollyBack = function () {
-        var delta = .02;
+    this.dollyBack = function (delta) {
         var w = [eye[0] - at[0], eye[1] - at[1], eye[2] - at[2]];
         var newEye = new Matrix4()
             .setTranslate(w[0] * delta, w[1] * delta, w[2] * delta)
@@ -191,8 +189,8 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
     };
 
     // User pressed 'w' key. Pedestal (Move up)
-    this.pedestalUp = function () {
-        var delta = diagonal * 0.05;
+    this.pedestalUp = function (mov) {
+        var delta = diagonal * mov;
 
         var newEye = new Matrix4()
             .setTranslate(up[0] * delta, up[1] * delta, up[2] * delta)
@@ -212,8 +210,8 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
     };
 
     // User pressed 's' key. Pedestal (Move down)
-    this.pedestalDown = function () {
-        var delta = diagonal * 0.05;
+    this.pedestalDown = function (mov) {
+        var delta = diagonal * mov;
 
         var newEye = new Matrix4()
             .setTranslate(-up[0] * delta, -up[1] * delta, -up[2] * delta)
