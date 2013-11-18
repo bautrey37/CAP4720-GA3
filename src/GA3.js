@@ -98,7 +98,10 @@ function main() {
 		}
 		i++;
         gl.uniformMatrix4fv(program.uniformLocations["viewT"], false, viewMatrix.elements);
-        //model.draw();
+
+        var at = camera.getAt();
+        var eye = camera.getEye();
+        gl.uniform3f(program.uniformLocations["viewVec"], at[0] - eye[0], at[1] - eye[1], at[2] - eye[2]);
         scene.draw();
 
         gl.useProgram(null);
