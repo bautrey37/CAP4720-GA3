@@ -5,8 +5,8 @@ uniform mat4 projT, viewT, modelT, normalT;
 varying vec2 tCoord;
 varying vec3 fragPosition, fragNormal;
 void main() {
-    fragPosition = (viewT * modelT * vec4(position, 1.0)).xyz;
-    fragNormal = normalize((viewT * normalT * vec4(normal, 0.0)).xyz);
+    fragPosition = (modelT * vec4(position, 1.0)).xyz;
+    fragNormal = normalize((normalT * vec4(normal, 0.0)).xyz);
     tCoord = texCoord;
     gl_Position = projT * viewT * modelT * vec4(position, 1.0);
 }

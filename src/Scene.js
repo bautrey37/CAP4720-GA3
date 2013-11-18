@@ -25,6 +25,7 @@ function Scene() {
         //sunAngle is global and can be changed from html
         lightPosition[0] = lightDistance * Math.cos(sunAngle * Math.PI/180);
         lightPosition[1] = lightDistance * Math.sin(sunAngle * Math.PI/180);
+        lightPosition[2] = lightDistance * Math.sin(sunAngle * Math.PI/180);
         if(sunFlag) sunAngle += 1.0;  //degrees
         if(sunAngle > 360) sunAngle = 0;
         sunNum.innerHTML = sunAngle.toFixed(1).toString();

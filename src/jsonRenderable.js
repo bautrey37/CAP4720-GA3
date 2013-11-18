@@ -14,7 +14,7 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
     var nodeTransformations = computeNodeTrasformations();
     this.draw = function (mMatrix, T, lightPosition) {
         gl.uniform3f(program.uniformLocations["lightPosition"], lightPosition[0], lightPosition[1], lightPosition[2]);
-        gl.uniform3f(program.uniformLocations["ambient"], 0.1, 0.1, 0.1); // Set the ambient light
+        gl.uniform3f(program.uniformLocations["ambient"], 0.2, 0.2, 0.2); // Set the ambient light
 
         var mM, nM;
         var nMeshes, node;
