@@ -18,9 +18,11 @@
 <canvas id="myCanvas1" ></canvas>
 <div id="toolbar">
     <h1>Project 3</h1>
-    <br><strong> Sun <span id="sunNum">0</span> degrees</strong><br/>
-    <input type="range" name="sun" id="sun" min="0" max="180" step="1.0" value="0" class="slider"
-           onchange="changeSun(value)"/><br/>
+    <br><strong>Sun <span id="sunNum">0</span> degrees </strong>
+    <input type="button" id="sunToggle" value="Toggle" onclick="toggleSunFlag()" /><br/>
+    <input type="range" name="sun" id="sun" min="0" max="360" step="1.0" value="0" class="slider"
+           onchange="changeSun(value)"/>
+    <br/>
 
     <br><strong>Flood: </strong><input type="button" id="flood" value="Toggle" onclick="toggleFloodFlag();" />
     <br><strong>Camera: </strong><input type="button" id="camReset" value="Reset" onclick="cameraFlag = true;" />

@@ -6,7 +6,7 @@
 
 function Scene() {
     var models = [];
-    var lightDistance = 40;
+    var lightDistance = 20;
     var lightPosition = [0,0,0];
 
     this.addModel = function(model, dim, relSize) {
@@ -25,8 +25,8 @@ function Scene() {
         //sunAngle is global and can be changed from html
         lightPosition[0] = lightDistance * Math.cos(sunAngle * Math.PI/180);
         lightPosition[1] = lightDistance * Math.sin(sunAngle * Math.PI/180);
-        sunAngle += 0.1;  //degrees
-        if(sunAngle > 180) sunAngle = 0;
+        if(sunFlag) sunAngle += 1.0;  //degrees
+        if(sunAngle > 360) sunAngle = 0;
         sunNum.innerHTML = sunAngle.toFixed(1).toString();
         document.getElementById("sun").value = sunAngle;
 

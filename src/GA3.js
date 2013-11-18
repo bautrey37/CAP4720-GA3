@@ -6,7 +6,8 @@
 //This function gets called when reading a JSON file. It stores the current xml information.
 
 var floodFlag = true;
-var sunAngle = 32; //degrees
+var sunAngle = 0; //degrees
+var sunFlag = false;
 var cameraFlag = false;
 
 function toggleFloodFlag() {
@@ -20,6 +21,12 @@ function changeSun(value) {
     sunNum.innerHTML = value;
     document.getElementById("myCanvas1").focus();
     document.getElementById("sun").blur();
+}
+
+function toggleSunFlag() {
+    sunFlag = !sunFlag;
+    document.getElementById("myCanvas1").focus();
+    document.getElementById("sunToggle").blur();
 }
 
 function addMessage(message) {
@@ -64,15 +71,11 @@ function main() {
     draw();
 
     function initModels() {
-//        newModel("Shrine", 0.001, 0);
         newModel("dabrovic-sponza", [0, 0, -2.0], 2);
         newModel("House", [0.8, -1.5, 0], 0.5);
         newModel("House", [-0.8, -1.5, 0], 0.5);
         newModel("House", [0.8, 1, 0], 0.5);
         newModel("House", [-0.8, 1, 0], 0.5);
-        //newModel("House", 0.001, 0);
-        //newModel("House", 0.1, 0);
-        //and other models
     }
 
     function draw() {
@@ -90,7 +93,7 @@ function main() {
 		
 		// Update camera position based on key presses every two loops.
 		if (i == 1) {
-			i=0;
+			i = 0;
 			updateCameraPos();
 		}
 		i++;
