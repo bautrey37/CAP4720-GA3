@@ -17,7 +17,7 @@ function toggleFloodFlag() {
 }
 
 function changeSun(value) {
-    sunAngle = value;
+    sunAngle = Number(value);
     sunNum.innerHTML = value;
     document.getElementById("myCanvas1").focus();
     document.getElementById("sun").blur();
@@ -82,7 +82,6 @@ function main() {
         gl.useProgram(program);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         if(cameraFlag) {
-            addMessage("camera");
             camera = resetCamera();
             viewMatrix = camera.getViewMatrix();
             cameraFlag = false;
