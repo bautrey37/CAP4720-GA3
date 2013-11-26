@@ -15,7 +15,7 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
     var diffuseTexObjs = loadDiffuseTextures();
     var meshDrawables = loadMeshes(gl.TRIANGLES);
     var nodeTransformations = computeNodeTrasformations();
-    this.draw = function (mMatrix, T, lightPosition, drawMode) {
+    this.draw = function (mMatrix, T, lightPosition, drawMode, floodFlag) {
         gl.uniform3f(program.uniformLocations["lightPosition"], lightPosition[0], lightPosition[1], lightPosition[2]);
         gl.uniform3f(program.uniformLocations["ambient"], 0.2, 0.2, 0.2); // Set the ambient light
 
@@ -78,18 +78,28 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
 				gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
 				for (var j = 0; j < nMeshes; j++) {
 					var meshIndex = node.meshIndices[j];
-					var materialIndex = model.meshes[meshIndex].materialIndex;
-
-					var r = model.materials[materialIndex].diffuseReflectance;
-					gl.uniform3f(program.uniformLocations["diffuseCoeff"], r[0], r[1], r[2]);
-					if (diffuseTexObjs[materialIndex] && diffuseTexObjs[materialIndex].complete) {
-						gl.activeTexture(gl.TEXTURE0);
-						gl.bindTexture(gl.TEXTURE_2D, diffuseTexObjs[materialIndex]);
-						gl.uniform1i(program.uniformLocations["diffuseTex"], 0);
-						gl.uniform1i(program.uniformLocations["texturingEnabled"], 1);
-					}
-					else gl.uniform1i(program.uniformLocations["texturingEnabled"], 0);
 					
+					// Just draw environment map
+					if (floodFlag) {
+						gl.activeTexture(gl.TEXTURE1);
+						gl.bindTexture(gl.TEXTURE_CUBE_MAP, texCubeObj);
+						gl.uniform1i(program.uniformLocations["texUnit"], 1);
+						gl.uniform1i(program.uniformLocations["drawMap"], 1);
+					}
+					else {
+						gl.uniform1i(program.uniformLocations["drawMap"], 0);
+						var materialIndex = model.meshes[meshIndex].materialIndex;
+						var r = model.materials[materialIndex].diffuseReflectance;
+						gl.uniform3f(program.uniformLocations["diffuseCoeff"], r[0], r[1], r[2]);
+						if (diffuseTexObjs[materialIndex] && diffuseTexObjs[materialIndex].complete) {
+							gl.activeTexture(gl.TEXTURE0);
+							gl.bindTexture(gl.TEXTURE_2D, diffuseTexObjs[materialIndex]);
+							gl.uniform1i(program.uniformLocations["diffuseTex"], 0);
+							gl.uniform1i(program.uniformLocations["texturingEnabled"], 1);
+						}
+						else gl.uniform1i(program.uniformLocations["texturingEnabled"], 0);
+					}
+						
 					meshDrawables[meshIndex].draw();
 				}
 			}
