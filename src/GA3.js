@@ -75,6 +75,8 @@ function main() {
     viewMatrix = camera.getViewMatrix();
     projMatrix = camera.getProjMatrix(fov);
     initModels();
+    texCubeObj = loadCubemap(gl, '../cubeMap/skybox/',
+        ['posx.jpg','negx.jpg','posy.jpg','negy.jpg','posz.jpg','negz.jpg']);
     draw();
 
     function initModels() {
@@ -85,18 +87,6 @@ function main() {
         newModel("House", [0.8, 1, 0], 0.5);
         newModel("House", [-0.8, 1, 0], 0.5);
     }
-	
-	function isPowerOfTwo(x) {
-		return (x & (x - 1)) == 0;
-	}
-	
-	function nextHighestPowerOfTwo(x) {
-		x--;
-		for (var i = 1; i < 32; i <<= 1) {
-			x = x | x >> i;
-		}
-		return x + 1;
-	}
 	
     function draw() {
         gl.useProgram(program);
@@ -154,9 +144,6 @@ function main() {
         if (!model)alert("No model could be read");
         scene.addModel(model, dim, relSize);
     }
-	
-	texCubeObj = loadCubemap(gl, '../cubeMap/skybox/',
-		['posx.jpg','negx.jpg','posy.jpg','negy.jpg','posz.jpg','negz.jpg']);
 		
 	function loadCubemap(gl, cubemappath, texturefiles) 
 	{

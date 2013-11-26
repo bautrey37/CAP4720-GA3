@@ -8,8 +8,6 @@ function parseJSON(jsonFile) {
     return JSON.parse(Doc);
 }
 
-
-
 function JsonRenderable(gl, program, modelPath, modelfilename) {
     var model = parseJSON(modelPath + modelfilename);
     var diffuseTexObjs = loadDiffuseTextures();
@@ -48,6 +46,8 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
 			if (drawMode == 1) {
 				gl.disable(gl.DEPTH_TEST);
 				gl.uniform1i(program.uniformLocations["shadowDraw"], 1);
+                gl.uniform1i(program.uniformLocations["drawEnv"], 0);
+                gl.uniform1f(program.uniformLocations["alpha"], 1.0);
 				for (var j = 0; j < nMeshes; j++) {
 					var meshIndex = node.meshIndices[j];
 					
@@ -63,6 +63,8 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
             //reflection
             else if(drawMode == 2) {
                 gl.uniform1i(program.uniformLocations["shadowDraw"], 0);
+                gl.uniform1i(program.uniformLocations["drawEnv"], 0);
+                gl.uniform1f(program.uniformLocations["alpha"], 0.6);
                 for (var j = 0; j < nMeshes; j++) {
                     var meshIndex = node.meshIndices[j];
 
@@ -73,33 +75,38 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
                     meshDrawables[meshIndex].draw();
                 }
             }
-			//Either drawing models or plane
+			//draw plane
 			else if(drawMode == 3) {
 				gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
+
+                gl.uniform1f(program.uniformLocations["alpha"], 0.6);
 				for (var j = 0; j < nMeshes; j++) {
 					var meshIndex = node.meshIndices[j];
 					
 					if (floodFlag) {
+                        gl.uniform1i(program.uniformLocations["drawEnv"], 1);
 						gl.activeTexture(gl.TEXTURE1);
 						while (!texCubeObj.complete) {}
 						gl.bindTexture(gl.TEXTURE_CUBE_MAP, texCubeObj);
 						gl.uniform1i(program.uniformLocations["texUnit"], 1);
 						var newEye = camera.getEye();
 						gl.uniform3f(program.uniformLocations["eyePosition"], newEye[0], newEye[1], newEye[2]);
-						gl.uniform1i(program.uniformLocations["drawEnv"], 1);
-					
 					}
 					
 					meshDrawables[meshIndex].draw();
 				}
+                gl.uniform1i(program.uniformLocations["drawEnv"], 0);
 			}
+            //draw model
 			else if (drawMode == 4) {
+
 				gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
+                gl.uniform1i(program.uniformLocations["drawEnv"], 0);
+                gl.uniform1f(program.uniformLocations["alpha"], 1.0);
 				for (var j = 0; j < nMeshes; j++) {
 					var meshIndex = node.meshIndices[j];
 					
-					gl.uniform1i(program.uniformLocations["texUnit"], 0);
-					gl.uniform1i(program.uniformLocations["drawEnv"], 0);
+					//gl.uniform1i(program.uniformLocations["texUnit"], 1);
 					var materialIndex = model.meshes[meshIndex].materialIndex;
 
 					var r = model.materials[materialIndex].diffuseReflectance;
@@ -113,8 +120,8 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
 					else gl.uniform1i(program.uniformLocations["texturingEnabled"], 0);
 					
 				}
-				
 				meshDrawables[meshIndex].draw();
+
 			}
         }
     };

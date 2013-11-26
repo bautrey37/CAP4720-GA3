@@ -23,7 +23,8 @@ function createShaderProgram(gl) {
         program.attribLocations[attribNames[i]] = gl.getAttribLocation(program, attribNames[i]);
     }
     var uniformNames = ['modelT', 'viewT', 'projT', 'normalT', 'lightPosition', 'ambient',
-        'diffuseCoeff', 'diffuseTex', 'texturingEnabled', 'viewVec', 'shadowDraw', 'drawEnv', 'texUnit', 'eyePosition'];
+        'diffuseCoeff', 'diffuseTex', 'texturingEnabled', 'viewVec', 'shadowDraw', 'drawEnv',
+        'texUnit', 'eyePosition', 'alpha'];
 
 		program.uniformLocations = {};
 

@@ -49,9 +49,6 @@ function Scene() {
             models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 2, false); //reflection
             models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 4, false); //model
         }
-
     };
-
-
 }
 
