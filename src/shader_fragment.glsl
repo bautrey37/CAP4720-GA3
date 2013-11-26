@@ -21,5 +21,5 @@ void main() {
     float costheta = max(dot(lightDir, normalize(fragNormal)), 0.0); //light weighting
     vec3 texColor = (texturingEnabled == 0) ? vec3(1.0) : texture2D(diffuseTex, tCoord).rgb;
 	gl_FragColor = (shadowDraw == 0) ? vec4(texColor * diffuseCoeff * costheta + texColor*ambient + specular, 1.0)
-										: vec4(0.0,0.0,0.3,0.9);
+										: vec4(0.1,0.1,0.1,0.9);
 }

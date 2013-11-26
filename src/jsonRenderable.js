@@ -151,12 +151,6 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
         return drawables;
     }
 
-    function loadMaterials() {
-        for (var i = 0; i < model.materials.length; i++) {
-
-        }
-    }
-
 
     function loadDiffuseTextures() {
         function setTexture(gl, textureFileName) {

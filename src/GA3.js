@@ -40,7 +40,7 @@ function toggleSunFlag() {
 function addMessage(message) {
     console.log(message);
 }
-var camera;
+
 function main() {
     // ... global variables ...
     var gl, canvas, model, program;
@@ -53,7 +53,6 @@ function main() {
     gl = getWebGLContext(canvas, false);//Disable debugging
 
     var keys = [];
-    var i = 0;
     // Set up key listeners to move through the world.
     document.body.addEventListener("keydown", function (e) {
         keys[e.keyCode] = true;
@@ -78,7 +77,7 @@ function main() {
     draw();
 
     function initModels() {
-		newModel("Plane", [0, 0, 0], 5, false);
+		newModel("Plane", [0, 0, 0], 5);
         newModel("dabrovic-sponza", [0, 0, -2.0], 2);
         newModel("House", [0.8, -1.5, 0], 0.5);
         newModel("House", [-0.8, -1.5, 0], 0.5);
