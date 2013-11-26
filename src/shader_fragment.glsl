@@ -15,13 +15,15 @@ void main() {
 
     float specular = 0.0;
     //float d = max(dot(fragNormal, lightDir), 0.0);
-   // if (d > 0.0) {
+    // if (d > 0.0) {
         vec3 reflectVec = reflect(-lightDir, fragNormal);
         //specular = pow(max(dot(reflectVec, viewVec), 0.0), 10.0);
-   // }
-   if (drawMap == 1) {
-		//vec3 envColor = textureCube(texUnit, reflectVec).rgb;
-		//gl_FragColor = vec4(envColor, 1);
+    // }
+    if (drawMap == 1) {
+        vec3 viewDir = normalize(viewVec);
+        vec3 reflectedViewDir = reflect(-viewDir, fragNormal);
+		vec3 envColor = textureCube(texUnit, reflectedViewDir).rgb;
+		gl_FragColor = vec4(envColor, 1);
 	}
 	else {
 		float costheta = max(dot(lightDir, normalize(fragNormal)), 0.0); //light weighting
