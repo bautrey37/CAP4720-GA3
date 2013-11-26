@@ -6,6 +6,7 @@
 
 function Scene() {
     var models = [];
+    var plane = {};
     var lightDistance = 20;
     var lightPosition = [0, 0, 0];
 
@@ -22,6 +23,13 @@ function Scene() {
         models.push({mMatrix: mMatrix, Translate: [x * dim[0], y * dim[1] + dy, z * dim[2]], model: model});
     };
 
+    this.addPlane = function(object, relSize) {
+        var mMatrix = new Matrix4();
+        mMatrix.setScale(relSize, relSize, relSize);
+
+        plane = {mMatrix: mMatrix, object: object};
+    };
+
     this.draw = function () {
         //sunAngle is global and can be changed from html
         lightPosition[0] = lightDistance * Math.cos(sunAngle * Math.PI / 180);
@@ -33,21 +41,22 @@ function Scene() {
             camera.setAt([0, 0, 0]);
         }
 
-        if (sunFlag) sunAngle += 0.5;  //degrees
-        if (sunAngle > 360) sunAngle = 0;
+        if (sunFlag) sunAngle += 1.0;  //degrees
+        if (sunAngle > 180) sunAngle = 0;
         sunNum.innerHTML = sunAngle.toFixed(1).toString();
         document.getElementById("sun").value = sunAngle;
 
-        models[0].model.draw(models[0].mMatrix, models[0].Translate, lightPosition, 3, floodFlag); // Draw plane
+        plane.object.draw(plane.mMatrix, lightPosition, 3); // Draw plane
+
 
         // Draw all shadows
-        for (var i = 1; i < models.length; i++) {
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 1, false);
+        for (var i = 0; i < models.length; i++) {
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 1);
         }
         // Draw all models
-        for (var i = 1; i < models.length; i++) {
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 2, false); //reflection
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 3, false); //model
+        for (var i = 0; i < models.length; i++) {
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 2); //reflection
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 3); //model
         }
 
     };

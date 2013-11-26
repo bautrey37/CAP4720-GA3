@@ -44,7 +44,7 @@ function addMessage(message) {
 
 function main() {
     // ... global variables ...
-    var gl, canvas, model, program;
+    var gl, canvas, modelProgram, planeProgram;
     var projMatrix, viewMatrix;
     var fov = 20;
 
@@ -63,7 +63,8 @@ function main() {
     });
 
 
-    program = createShaderProgram(gl);
+    modelProgram = createShaderProgram(gl, 'model');
+    planeProgram = createShaderProgram(gl, 'plane');
     gl.clearColor(0, 0, 0, 1);
     gl.enable(gl.DEPTH_TEST);
 
@@ -78,17 +79,17 @@ function main() {
     draw();
 
     function initModels() {
-        newModel("Plane", [0, 0, 0], 5);
-        newModel("dabrovic-sponza", [0, 0, -2.0], 2);
-        newModel("House", [0.8, -1.5, 0], 0.5);
-        newModel("House", [-0.8, -1.5, 0], 0.5);
-        newModel("House", [0.8, 1, 0], 0.5);
-        newModel("House", [-0.8, 1, 0], 0.5);
+        newObject("Plane", [0, 0, 0], 5);
+        newObject("dabrovic-sponza", [0, 0, -2.0], 2);
+        newObject("House", [0.8, -1.5, 0], 0.5);
+        newObject("House", [-0.8, -1.5, 0], 0.5);
+        newObject("House", [0.8, 1, 0], 0.5);
+        newObject("House", [-0.8, 1, 0], 0.5);
     }
 
 
     function draw() {
-        gl.useProgram(program);
+        gl.useProgram(modelProgram);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         if (cameraFlag) {
             camera = resetCamera();
@@ -96,15 +97,15 @@ function main() {
         }
 
         projMatrix = camera.getProjMatrix(fov);
-        gl.uniformMatrix4fv(program.uniformLocations["projT"], false, projMatrix.elements);
+        gl.uniformMatrix4fv(modelProgram.uniformLocations["projT"], false, projMatrix.elements);
 
         updateCameraPos();
         viewMatrix = camera.getViewMatrix();
-        gl.uniformMatrix4fv(program.uniformLocations["viewT"], false, viewMatrix.elements);
+        gl.uniformMatrix4fv(modelProgram.uniformLocations["viewT"], false, viewMatrix.elements);
 
         var at = camera.getAt();
         var eye = camera.getEye();
-        gl.uniform3f(program.uniformLocations["viewVec"], at[0] - eye[0], at[1] - eye[1], at[2] - eye[2]);
+        gl.uniform3f(modelProgram.uniformLocations["viewVec"], at[0] - eye[0], at[1] - eye[1], at[2] - eye[2]);
         scene.draw();
 
         gl.useProgram(null);
@@ -138,69 +139,18 @@ function main() {
     /**
      * loads in new model, will specify position here
      */
-    function newModel(path, dim, relSize) {
-        model = new JsonRenderable(gl, program, "../model/" + path + "/models/", "model.json");
-        if (!model)alert("No model could be read");
-        scene.addModel(model, dim, relSize);
-    }
-
-    function loadCubemap(gl, cubemappath, texturefiles) {
-        var tex = gl.createTexture();
-        tex.complete = false;
-        loadACubeFaces(tex, cubemappath, texturefiles);
-        return tex;
-    }
-
-    function isPowerOfTwo(x) {
-        return (x & (x - 1)) == 0;
-    }
-
-    function nextHighestPowerOfTwo(x) {
-        x--;
-        for (var i = 1; i < 32; i <<= 1) {
-            x = x | x >> i;
+    function newObject(path, dim, relSize) {
+        if(path != "Plane") {
+            var model = new JsonRenderable(gl, modelProgram, "../model/" + path + "/models/", "model.json");
+            if (!model)alert("No model could be read");
+            scene.addModel(model, dim, relSize);
         }
-        return x + 1;
-    }
-
-    function loadACubeFaces(tex, cubemappath, texturefiles) {
-        var imgs = [];
-        var count = 6;
-        for (var i = 0; i < 6; i++) {
-            var img = new Image();
-            imgs[i] = img;
-            img.onload = function () {
-                if (!isPowerOfTwo(img.width) || !isPowerOfTwo(img.height)) {
-                    // Scale up the texture to the next highest power of two dimensions.
-                    var canvas = document.createElement("canvas");
-                    canvas.width = nextHighestPowerOfTwo(img.width);
-                    canvas.height = nextHighestPowerOfTwo(img.height);
-                    var ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    img = canvas;
-                }
-                count--;
-                if (count == 0) {
-                    tex.complete = true;
-                    var directions = [
-                        gl.TEXTURE_CUBE_MAP_POSITIVE_X,
-                        gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-                        gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
-                        gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                        gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-                        gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
-                    ];
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, tex);
-                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                    for (var dir = 0; dir < 6; dir++)gl.texImage2D(directions[dir], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgs[dir]);
-                    gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                }
-            }
-            imgs[i].src = cubemappath + texturefiles[i];
+        else {
+            var plane = new JsonPlaneRenderable(gl, planeProgram, "../model/" + path + "/models/", "model.json");
+            //var plane = new JsonRenderable(gl, modelProgram, "../model/" + path + "/models/", "model.json");
+            //console.log('hi');
+            if (!plane)alert("No plane could be read");
+            scene.addPlane(plane, relSize);
         }
     }
 }

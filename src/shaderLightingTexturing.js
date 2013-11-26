@@ -1,5 +1,5 @@
 "use strict";
-function createShaderProgram(gl) {
+function createShaderProgram2(gl) {
     //get text from shader file
     function loadShaderFile(fileName) {
         var request = new XMLHttpRequest();
@@ -23,8 +23,7 @@ function createShaderProgram(gl) {
         program.attribLocations[attribNames[i]] = gl.getAttribLocation(program, attribNames[i]);
     }
     var uniformNames = ['modelT', 'viewT', 'projT', 'normalT', 'lightPosition', 'ambient',
-        'diffuseCoeff', 'diffuseTex', 'texturingEnabled', 'viewVec', 'shinyness', 'shadowDraw', 'texUnit',
-        'drawMap'];
+        'diffuseCoeff', 'diffuseTex', 'texturingEnabled', 'viewVec', 'shinyness', 'shadowDraw'];
     program.uniformLocations = {};
 
     for (i = 0; i < uniformNames.length; i++) {
