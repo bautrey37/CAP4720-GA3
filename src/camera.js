@@ -8,8 +8,6 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
     var up = [modelUp[0], modelUp[1], modelUp[2]];
     var fov, near = diagonal*0.1, far = diagonal*20;
     var tiltAngle = 0;
-    //addMessage(at);
-
 
     this.getViewMatrix = function (e) {
         if (e == undefined) e = eye;
@@ -22,6 +20,16 @@ function Camera(gl, d, modelUp) // Compute a camera from model's bounding box di
     this.getAt = function () {
         return at;
     };
+	this.setEye = function(pos){
+		eye[0] = pos[0];
+		eye[1] = pos[1];
+		eye[2] = pos[2];
+	}
+	this.setAt = function(pos) {
+		at[0] = pos[0];
+		at[1] = pos[1];
+		at[2] = pos[2];
+	}
     this.getProjMatrix = function (FOV) {
         fov = FOV;
         //addMessage("FOV: " + fov + ", near: " + (near / diagonal).toFixed(2) + ", far: " + (far / diagonal).toFixed(2));

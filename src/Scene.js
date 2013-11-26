@@ -39,19 +39,15 @@ function Scene() {
         document.getElementById("sun").value = sunAngle;
 
         models[0].model.draw(models[0].mMatrix, models[0].Translate, lightPosition, false); // Draw plane
-		// Draw houses with shadows
-		//for (var i=1; i<models.length; i++) {
-		models[1].model.draw(models[1].mMatrix, models[1].Translate, lightPosition, true, 0); // 0 = no rotation
-		models[2].model.draw(models[2].mMatrix, models[2].Translate, lightPosition, true, 1); // 1 = rotate -90 degrees
-		models[3].model.draw(models[3].mMatrix, models[3].Translate, lightPosition, true, 1);
-		models[4].model.draw(models[4].mMatrix, models[4].Translate, lightPosition, true, 2); // 2 = rotate 90 degrees
-		models[5].model.draw(models[5].mMatrix, models[5].Translate, lightPosition, true, 2);
 		
-		models[1].model.draw(models[1].mMatrix, models[1].Translate, lightPosition, false, 0);
-		models[2].model.draw(models[2].mMatrix, models[2].Translate, lightPosition, false, 1);
-		models[3].model.draw(models[3].mMatrix, models[3].Translate, lightPosition, false, 1);
-		models[4].model.draw(models[4].mMatrix, models[4].Translate, lightPosition, false, 2);
-		models[5].model.draw(models[5].mMatrix, models[5].Translate, lightPosition, false, 2);
-		
+		// Draw all shadows
+		for (var i=1; i<models.length; i++) {
+			models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, true);
+		}
+		// Draw all models
+		for (var i=1; i<models.length; i++) {
+			models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, false);
+		}
+
     };
 }

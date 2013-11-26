@@ -29,7 +29,7 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
     var diffuseTexObjs = loadDiffuseTextures();
     var meshDrawables = loadMeshes(gl.TRIANGLES);
     var nodeTransformations = computeNodeTrasformations();
-    this.draw = function (mMatrix, T, lightPosition, drawShadow, rotation) {
+    this.draw = function (mMatrix, T, lightPosition, drawShadow) {
         gl.uniform3f(program.uniformLocations["lightPosition"], lightPosition[0], lightPosition[1], lightPosition[2]);
         gl.uniform3f(program.uniformLocations["ambient"], 0.2, 0.2, 0.2); // Set the ambient light
 
@@ -39,12 +39,7 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
         for (var i = 0; i < nNodes; i++) {
 			
 			mM = (mMatrix) ? new Matrix4(mMatrix) : new Matrix4();
-			
-			//if (rotation == 1) {
-			//	mM.rotate(-90, 0, 1, 0);
-				//rot++;
-			//}
-			
+
 			mM.multiply(nodeTransformations.modelT[i]);
 			
 			//mM = (mMatrix) ? (new Matrix4(mMatrix).multiply(nodeTransformations.modelT[i])) : nodeTransformations.modelT[i];
@@ -57,10 +52,6 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
             }
             else nM = nodeTransformations.normalT[i];
 
-			
-			//else if (rotation == 2)
-			//	mM.rotate(-90, 0, 0, 1);
-				
             mM.translate(T[0], T[1], T[2]);
 
             gl.uniformMatrix4fv(program.uniformLocations["normalT"], false, nM.elements);

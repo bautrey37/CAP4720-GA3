@@ -40,10 +40,10 @@ function toggleSunFlag() {
 function addMessage(message) {
     console.log(message);
 }
-
+var camera;
 function main() {
     // ... global variables ...
-    var gl, canvas, model, camera, program;
+    var gl, canvas, model, program;
     var projMatrix, viewMatrix;
     var fov = 20;
 
@@ -110,6 +110,7 @@ function main() {
         gl.uniformMatrix4fv(program.uniformLocations["projT"], false, projMatrix.elements);
 
 		updateCameraPos();
+		viewMatrix = camera.getViewMatrix();
         gl.uniformMatrix4fv(program.uniformLocations["viewT"], false, viewMatrix.elements);
 
         var at = camera.getAt();
