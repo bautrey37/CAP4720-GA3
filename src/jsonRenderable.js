@@ -7,7 +7,7 @@ function parseJSON(jsonFile) {
     var Doc = xhttp.responseText;
     return JSON.parse(Doc);
 }
-
+var rot = 0;
 function computeShadowProjectionMatrix(Q,N,L) {
 	var NdotQ = N[0]*Q[0]+N[1]*Q[1]+N[2]*Q[2];
 	var NdotL = N[0]*L[0]+N[1]*L[1]+N[2]*L[2];
@@ -29,7 +29,7 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
     var diffuseTexObjs = loadDiffuseTextures();
     var meshDrawables = loadMeshes(gl.TRIANGLES);
     var nodeTransformations = computeNodeTrasformations();
-    this.draw = function (mMatrix, T, lightPosition, drawShadow) {
+    this.draw = function (mMatrix, T, lightPosition, drawShadow, rotation) {
         gl.uniform3f(program.uniformLocations["lightPosition"], lightPosition[0], lightPosition[1], lightPosition[2]);
         gl.uniform3f(program.uniformLocations["ambient"], 0.2, 0.2, 0.2); // Set the ambient light
 
@@ -37,7 +37,18 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
         var nMeshes, node;
         var nNodes = model.nodes.length;
         for (var i = 0; i < nNodes; i++) {
-            mM = (mMatrix) ? (new Matrix4(mMatrix).multiply(nodeTransformations.modelT[i])) : nodeTransformations.modelT[i];
+			
+			mM = (mMatrix) ? new Matrix4(mMatrix) : new Matrix4();
+			
+			//if (rotation == 1) {
+			//	mM.rotate(-90, 0, 1, 0);
+				//rot++;
+			//}
+			
+			mM.multiply(nodeTransformations.modelT[i]);
+			
+			//mM = (mMatrix) ? (new Matrix4(mMatrix).multiply(nodeTransformations.modelT[i])) : nodeTransformations.modelT[i];
+            //mM = (mMatrix) ? (new Matrix4(mMatrix).multiply(nodeTransformations.modelT[i])) : nodeTransformations.modelT[i];
             if (mMatrix) {
                 nM = new Matrix4(mMatrix).multiply(nodeTransformations.normalT[i]);
                 nM.elements[12] = 0;
@@ -46,6 +57,10 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
             }
             else nM = nodeTransformations.normalT[i];
 
+			
+			//else if (rotation == 2)
+			//	mM.rotate(-90, 0, 0, 1);
+				
             mM.translate(T[0], T[1], T[2]);
 
             gl.uniformMatrix4fv(program.uniformLocations["normalT"], false, nM.elements);
@@ -68,23 +83,25 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
 				gl.enable(gl.DEPTH_TEST);
             }
 			
-			gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
-            for (var j = 0; j < nMeshes; j++) {
-                var meshIndex = node.meshIndices[j];
-                var materialIndex = model.meshes[meshIndex].materialIndex;
+			else {
+				gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
+				for (var j = 0; j < nMeshes; j++) {
+					var meshIndex = node.meshIndices[j];
+					var materialIndex = model.meshes[meshIndex].materialIndex;
 
-                var r = model.materials[materialIndex].diffuseReflectance;
-                gl.uniform3f(program.uniformLocations["diffuseCoeff"], r[0], r[1], r[2]);
-                if (diffuseTexObjs[materialIndex] && diffuseTexObjs[materialIndex].complete) {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, diffuseTexObjs[materialIndex]);
-                    gl.uniform1i(program.uniformLocations["diffuseTex"], 0);
-                    gl.uniform1i(program.uniformLocations["texturingEnabled"], 1);
-                }
-                else gl.uniform1i(program.uniformLocations["texturingEnabled"], 0);
-				
-                meshDrawables[meshIndex].draw();
-            }
+					var r = model.materials[materialIndex].diffuseReflectance;
+					gl.uniform3f(program.uniformLocations["diffuseCoeff"], r[0], r[1], r[2]);
+					if (diffuseTexObjs[materialIndex] && diffuseTexObjs[materialIndex].complete) {
+						gl.activeTexture(gl.TEXTURE0);
+						gl.bindTexture(gl.TEXTURE_2D, diffuseTexObjs[materialIndex]);
+						gl.uniform1i(program.uniformLocations["diffuseTex"], 0);
+						gl.uniform1i(program.uniformLocations["texturingEnabled"], 1);
+					}
+					else gl.uniform1i(program.uniformLocations["texturingEnabled"], 0);
+					
+					meshDrawables[meshIndex].draw();
+				}
+			}
         }
     }
     function computeNodeTrasformations() {
