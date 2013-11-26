@@ -1,0 +1,29 @@
+{
+	"name" : "plane",
+	"materials" : [
+		{
+			"diffuseTexture":[],
+			"diffuseReflectance": [0.0,0.0,1.0,1],
+			"ambientReflectance": [0,0,0,1],
+			"specularReflectance": [0.4,0.4,0.4,1],
+			"shininess": 10,
+			"emissionColor": [0,0,0,1]
+		}
+	],
+	"meshes": [
+		{
+		"vertexPositions" : [-1,0,-1,1,0,-1,1,0,1,-1,0,1],
+		"vertexNormals" : [0,1,0,0,1,0,0,1,0,0,1,0],
+		"vertexTexCoordinates" : [[]],
+		"indices" : [0,1,2,0,2,3],
+		"materialIndex" : 0	
+		}
+	],
+	"nodes" : [
+		{
+			"modelMatrix" : [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+			"meshIndices" : [0]
+		}
+	]
+
+}

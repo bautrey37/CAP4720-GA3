@@ -4,8 +4,9 @@ uniform vec3 ambient;
 uniform vec3 diffuseCoeff;
 uniform vec3 viewVec;
 uniform float shinyness;
-uniform sampler2D diffuseTex;
+uniform sampler2D diffuseTex, shadowMap;
 uniform int texturingEnabled;
+uniform int shadowDraw;
 varying vec2 tCoord;
 varying vec3 fragPosition, fragNormal;
 void main() {
@@ -19,5 +20,6 @@ void main() {
     }
     float costheta = max(dot(lightDir, normalize(fragNormal)), 0.0); //light weighting
     vec3 texColor = (texturingEnabled == 0) ? vec3(1.0) : texture2D(diffuseTex, tCoord).rgb;
-    gl_FragColor = vec4(texColor * diffuseCoeff * costheta + ambient + specular, 1.0);
+	gl_FragColor = (shadowDraw == 0) ? vec4(texColor * diffuseCoeff * costheta + texColor*ambient + specular, 1.0)
+										: vec4(0.0,0.0,0.3,0.9);
 }

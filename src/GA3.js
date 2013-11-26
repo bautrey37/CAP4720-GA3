@@ -7,13 +7,21 @@
 
 var floodFlag = true;
 var sunAngle = 0; //degrees
-var sunFlag = false;
+var sunFlag = true;
 var cameraFlag = false;
+var lockCamFlag = false;
+var N = [0,1,0];
+var Q = [0,0,0];
+var camera = null;
 
 function toggleFloodFlag() {
     floodFlag = !floodFlag;
     document.getElementById("myCanvas1").focus();
     document.getElementById("flood").blur();
+}
+
+function toggleCamLock() {
+	lockCamFlag = !lockCamFlag;
 }
 
 function changeSun(value) {
@@ -40,7 +48,6 @@ function main() {
     var fov = 20;
 
     canvas = document.getElementById("myCanvas1");
-    //addMessage(((canvas)?"Canvas acquired":"Error: Can not acquire canvas"));
     canvas.width = window.innerWidth - 249; //subtracts the toolbar width
     canvas.height = window.innerHeight;
     gl = getWebGLContext(canvas, false);//Disable debugging
@@ -71,31 +78,38 @@ function main() {
     draw();
 
     function initModels() {
+		newModel("Plane", [0, 0, 0], 5, false);
         newModel("dabrovic-sponza", [0, 0, -2.0], 2);
         newModel("House", [0.8, -1.5, 0], 0.5);
         newModel("House", [-0.8, -1.5, 0], 0.5);
         newModel("House", [0.8, 1, 0], 0.5);
         newModel("House", [-0.8, 1, 0], 0.5);
     }
-
+	
+	function isPowerOfTwo(x) {
+		return (x & (x - 1)) == 0;
+	}
+	
+	function nextHighestPowerOfTwo(x) {
+		x--;
+		for (var i = 1; i < 32; i <<= 1) {
+			x = x | x >> i;
+		}
+		return x + 1;
+	}
+	
     function draw() {
         gl.useProgram(program);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         if(cameraFlag) {
             camera = resetCamera();
-            viewMatrix = camera.getViewMatrix();
             cameraFlag = false;
         }
 
         projMatrix = camera.getProjMatrix(fov);
         gl.uniformMatrix4fv(program.uniformLocations["projT"], false, projMatrix.elements);
-		
-		// Update camera position based on key presses every two loops.
-		if (i == 1) {
-			i = 0;
-			updateCameraPos();
-		}
-		i++;
+
+		updateCameraPos();
         gl.uniformMatrix4fv(program.uniformLocations["viewT"], false, viewMatrix.elements);
 
         var at = camera.getAt();

@@ -18,21 +18,30 @@ function Scene() {
         var scale = (1/Math.max(x,y,z)) * relSize;
         mMatrix.setScale(scale,scale,scale);
 
-        models.push({mMatrix: mMatrix, Translate:[x*dim[0], y*dim[1], z*dim[2]], model: model});
+		var dy = 0 - bounds.min[1];
+        models.push({mMatrix: mMatrix, Translate:[x*dim[0], y*dim[1] + dy, z*dim[2]], model: model});
     };
 
     this.draw = function(){
         //sunAngle is global and can be changed from html
         lightPosition[0] = lightDistance * Math.cos(sunAngle * Math.PI/180);
-        lightPosition[1] = lightDistance * Math.sin(sunAngle * Math.PI/180);
+        lightPosition[1] = lightDistance;
         lightPosition[2] = lightDistance * Math.sin(sunAngle * Math.PI/180);
+		
+		if (lockCamFlag) {
+			camera.setEye(lightPosition);
+			camera.setAt([0,0,0]);
+		}
+		
         if(sunFlag) sunAngle += 0.5;  //degrees
         if(sunAngle > 360) sunAngle = 0;
         sunNum.innerHTML = sunAngle.toFixed(1).toString();
         document.getElementById("sun").value = sunAngle;
 
-        for(var i = 0; i < models.length; i++) {
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition);
-        }
+        models[0].model.draw(models[0].mMatrix, models[0].Translate, lightPosition, false); // Draw plane
+		// Draw houses with shadows
+		for (var i=1; i<models.length; i++) {
+			models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, true);
+		}
     };
 }
