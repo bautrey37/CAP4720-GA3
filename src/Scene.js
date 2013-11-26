@@ -38,16 +38,16 @@ function Scene() {
         sunNum.innerHTML = sunAngle.toFixed(1).toString();
         document.getElementById("sun").value = sunAngle;
 
-        models[0].model.draw(models[0].mMatrix, models[0].Translate, lightPosition, 3); // Draw plane
+        models[0].model.draw(models[0].mMatrix, models[0].Translate, lightPosition, 3, floodFlag); // Draw plane
 
         // Draw all shadows
         for (var i = 1; i < models.length; i++) {
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 1);
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 1, false);
         }
         // Draw all models
         for (var i = 1; i < models.length; i++) {
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 2); //reflection
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 3); //model
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 2, false); //reflection
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 4, false); //model
         }
 
     };

@@ -15,7 +15,7 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
     var diffuseTexObjs = loadDiffuseTextures();
     var meshDrawables = loadMeshes(gl.TRIANGLES);
     var nodeTransformations = computeNodeTrasformations();
-    this.draw = function (mMatrix, T, lightPosition, drawMode) {
+    this.draw = function (mMatrix, T, lightPosition, drawMode, floodFlag) {
         gl.uniform3f(program.uniformLocations["lightPosition"], lightPosition[0], lightPosition[1], lightPosition[2]);
         gl.uniform3f(program.uniformLocations["ambient"], 0.2, 0.2, 0.2); // Set the ambient light
 
@@ -73,11 +73,33 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
                     meshDrawables[meshIndex].draw();
                 }
             }
-			//models
+			//Either drawing models or plane
 			else if(drawMode == 3) {
 				gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
 				for (var j = 0; j < nMeshes; j++) {
 					var meshIndex = node.meshIndices[j];
+					
+					if (floodFlag) {
+						gl.activeTexture(gl.TEXTURE1);
+						while (!texCubeObj.complete) {}
+						gl.bindTexture(gl.TEXTURE_CUBE_MAP, texCubeObj);
+						gl.uniform1i(program.uniformLocations["texUnit"], 1);
+						var newEye = camera.getEye();
+						gl.uniform3f(program.uniformLocations["eyePosition"], newEye[0], newEye[1], newEye[2]);
+						gl.uniform1i(program.uniformLocations["drawEnv"], 1);
+					
+					}
+					
+					meshDrawables[meshIndex].draw();
+				}
+			}
+			else if (drawMode == 4) {
+				gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
+				for (var j = 0; j < nMeshes; j++) {
+					var meshIndex = node.meshIndices[j];
+					
+					gl.uniform1i(program.uniformLocations["texUnit"], 0);
+					gl.uniform1i(program.uniformLocations["drawEnv"], 0);
 					var materialIndex = model.meshes[meshIndex].materialIndex;
 
 					var r = model.materials[materialIndex].diffuseReflectance;
@@ -90,8 +112,9 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
 					}
 					else gl.uniform1i(program.uniformLocations["texturingEnabled"], 0);
 					
-					meshDrawables[meshIndex].draw();
 				}
+				
+				meshDrawables[meshIndex].draw();
 			}
         }
     };
