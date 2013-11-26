@@ -10,8 +10,7 @@
     <script src="GA3.js"></script>
     <script src="camera.js"></script>
     <script src="jsonRenderable.js"></script>
-    <script src="jsonPlaneRenderable.js"></script>
-    <script src="shaderLoader.js"></script>
+    <script src="shaderLightingTexturing.js"></script>
     <script src="Scene.js"></script>
 </head>
 <body onload="main();">
@@ -20,7 +19,7 @@
     <h1>Project 3</h1>
     <br><strong>Sun: <span id="sunNum">0</span> degrees </strong>
     <input type="button" id="sunToggle" value="Toggle" onclick="toggleSunFlag()" /><br/>
-    <input type="range" name="sun" id="sun" min="0" max="180" step="1.0" value="0" class="slider"
+    <input type="range" name="sun" id="sun" min="0" max="360" step="1.0" value="0" class="slider"
            onchange="changeSun(value)"/>
     <br/>
     <br><strong>Projection Shadow: </strong><input type="button" id="shadowProj" value="Toggle" onclick="" />

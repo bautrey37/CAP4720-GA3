@@ -1,5 +1,5 @@
 "use strict";
-function createShaderProgram2(gl) {
+function createShaderProgram(gl) {
     //get text from shader file
     function loadShaderFile(fileName) {
         var request = new XMLHttpRequest();

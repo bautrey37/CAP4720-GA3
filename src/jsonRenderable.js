@@ -8,6 +8,8 @@ function parseJSON(jsonFile) {
     return JSON.parse(Doc);
 }
 
+
+
 function JsonRenderable(gl, program, modelPath, modelfilename) {
     var model = parseJSON(modelPath + modelfilename);
     var diffuseTexObjs = loadDiffuseTextures();
@@ -21,12 +23,12 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
         var nMeshes, node;
         var nNodes = model.nodes.length;
         for (var i = 0; i < nNodes; i++) {
+			
+			mM = (mMatrix) ? new Matrix4(mMatrix) : new Matrix4();
 
-            mM = (mMatrix) ? new Matrix4(mMatrix) : new Matrix4();
-
-            mM.multiply(nodeTransformations.modelT[i]);
-
-            //mM = (mMatrix) ? (new Matrix4(mMatrix).multiply(nodeTransformations.modelT[i])) : nodeTransformations.modelT[i];
+			mM.multiply(nodeTransformations.modelT[i]);
+			
+			//mM = (mMatrix) ? (new Matrix4(mMatrix).multiply(nodeTransformations.modelT[i])) : nodeTransformations.modelT[i];
             //mM = (mMatrix) ? (new Matrix4(mMatrix).multiply(nodeTransformations.modelT[i])) : nodeTransformations.modelT[i];
             if (mMatrix) {
                 nM = new Matrix4(mMatrix).multiply(nodeTransformations.normalT[i]);
@@ -43,23 +45,23 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
             nMeshes = node.meshIndices.length;
 
             //shadows
-            if (drawMode == 1) {
-                gl.disable(gl.DEPTH_TEST);
-                gl.uniform1i(program.uniformLocations["shadowDraw"], 1);
-                for (var j = 0; j < nMeshes; j++) {
-                    var meshIndex = node.meshIndices[j];
-
-                    var shadowMatrix = computeShadowProjectionMatrix([0, 0, 0], [0, 1, 0], [lightPosition[0], lightPosition[1], lightPosition[2], 1]);
-                    var newM = new Matrix4(shadowMatrix).multiply(mM);
-                    gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, newM.elements);
-
-                    meshDrawables[meshIndex].draw();
-                }
-                gl.uniform1i(program.uniformLocations["shadowDraw"], 0);
-                gl.enable(gl.DEPTH_TEST);
+			if (drawMode == 1) {
+				gl.disable(gl.DEPTH_TEST);
+				gl.uniform1i(program.uniformLocations["shadowDraw"], 1);
+				for (var j = 0; j < nMeshes; j++) {
+					var meshIndex = node.meshIndices[j];
+					
+					var shadowMatrix = computeShadowProjectionMatrix([0,0,0],[0,1,0],[lightPosition[0], lightPosition[1], lightPosition[2], 1]);
+					var newM = new Matrix4(shadowMatrix).multiply(mM);
+					gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, newM.elements);
+					
+					meshDrawables[meshIndex].draw();
+				}
+				gl.uniform1i(program.uniformLocations["shadowDraw"], 0);
+				gl.enable(gl.DEPTH_TEST);
             }
             //reflection
-            else if (drawMode == 2) {
+            else if(drawMode == 2) {
                 gl.uniform1i(program.uniformLocations["shadowDraw"], 0);
                 for (var j = 0; j < nMeshes; j++) {
                     var meshIndex = node.meshIndices[j];
@@ -71,62 +73,60 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
                     meshDrawables[meshIndex].draw();
                 }
             }
-            //models
-            else if (drawMode == 3) {
-                gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
-                for (var j = 0; j < nMeshes; j++) {
-                    var meshIndex = node.meshIndices[j];
+			//models
+			else if(drawMode == 3) {
+				gl.uniformMatrix4fv(program.uniformLocations["modelT"], false, mM.elements);
+				for (var j = 0; j < nMeshes; j++) {
+					var meshIndex = node.meshIndices[j];
+					var materialIndex = model.meshes[meshIndex].materialIndex;
 
-                    gl.uniform1i(program.uniformLocations["drawMap"], 0);
-                    var materialIndex = model.meshes[meshIndex].materialIndex;
-                    var r = model.materials[materialIndex].diffuseReflectance;
-                    gl.uniform3f(program.uniformLocations["diffuseCoeff"], r[0], r[1], r[2]);
-                    if (diffuseTexObjs[materialIndex] && diffuseTexObjs[materialIndex].complete) {
-                        gl.activeTexture(gl.TEXTURE0);
-                        gl.bindTexture(gl.TEXTURE_2D, diffuseTexObjs[materialIndex]);
-                        gl.uniform1i(program.uniformLocations["diffuseTex"], 0);
-                        gl.uniform1i(program.uniformLocations["texturingEnabled"], 1);
-                    }
-                    else gl.uniform1i(program.uniformLocations["texturingEnabled"], 0);
-
-
-                    meshDrawables[meshIndex].draw();
-                }
-            }
+					var r = model.materials[materialIndex].diffuseReflectance;
+					gl.uniform3f(program.uniformLocations["diffuseCoeff"], r[0], r[1], r[2]);
+					if (diffuseTexObjs[materialIndex] && diffuseTexObjs[materialIndex].complete) {
+						gl.activeTexture(gl.TEXTURE0);
+						gl.bindTexture(gl.TEXTURE_2D, diffuseTexObjs[materialIndex]);
+						gl.uniform1i(program.uniformLocations["diffuseTex"], 0);
+						gl.uniform1i(program.uniformLocations["texturingEnabled"], 1);
+					}
+					else gl.uniform1i(program.uniformLocations["texturingEnabled"], 0);
+					
+					meshDrawables[meshIndex].draw();
+				}
+			}
         }
     };
 
-    function computeShadowProjectionMatrix(Q, N, L) {
-        var NdotQ = N[0] * Q[0] + N[1] * Q[1] + N[2] * Q[2];
-        var NdotL = N[0] * L[0] + N[1] * L[1] + N[2] * L[2];
-        var D = NdotL - ((L[3] > 0) ? NdotQ : 0);
+    function computeShadowProjectionMatrix(Q,N,L) {
+        var NdotQ = N[0]*Q[0]+N[1]*Q[1]+N[2]*Q[2];
+        var NdotL = N[0]*L[0]+N[1]*L[1]+N[2]*L[2];
+        var D = NdotL-((L[3]>0)?NdotQ:0);
         var shadowMatrix = new Matrix4();
         shadowMatrix.elements = [
-            D - N[0] * L[0], -N[0] * L[1], -N[0] * L[2], -N[0] * L[3],
-            -N[1] * L[0], D - N[1] * L[1], -N[1] * L[2], -N[1] * L[3],
-            -N[2] * L[0], -N[2] * L[1], D - N[2] * L[2], -N[2] * L[3],
-            NdotQ * L[0], NdotQ * L[1], NdotQ * L[2], NdotL
+            D-N[0]*L[0],-N[0]*L[1],-N[0]*L[2], -N[0]*L[3],
+            -N[1]*L[0], D-N[1]*L[1],-N[1]*L[2], -N[1]*L[3],
+            -N[2]*L[0],-N[2]*L[1], D-N[2]*L[2], -N[2]*L[3],
+            NdotQ*L[0], NdotQ*L[1], NdotQ*L[2], NdotL
         ];
         if (shadowMatrix.elements[15] < 0)
-            for (var i = 0; i < 16; i++) shadowMatrix.elements[i] = -shadowMatrix.elements[i];
+            for(var i=0; i<16;i++) shadowMatrix.elements[i] = -shadowMatrix.elements[i];
         return shadowMatrix;
     }
 
     function computeReflectionMatrix() {
-        var N = [0, 1, 0];
-        var Q = [0, 0, 0]; //a point on plane
-        var NdotQ = dot(N, Q);
+        var N = [0,1,0];
+        var Q = [0,0,0]; //a point on plane
+        var NdotQ = dot(N,Q);
         var reflectionMatrix = new Matrix4();
         reflectionMatrix.elements = new Float32Array([
-            1 - 2 * N[0] * N[0], -2 * N[1] * N[0], -2 * N[2] * N[0], 0,
-            -2 * N[0] * N[1], 1 - 2 * N[1] * N[1], -2 * N[2] * N[1], 0,
-            -2 * N[0] * N[2], -2 * N[1] * N[2], 1 - 2 * N[2] * N[2], 0,
-            2 * NdotQ * N[0], 2 * NdotQ * N[1], 2 * NdotQ * N[2], 1
+            1-2*N[0]*N[0],-2*N[1]*N[0],-2*N[2]*N[0],0,
+            -2*N[0]*N[1],1-2*N[1]*N[1],-2*N[2]*N[1],0,
+            -2*N[0]*N[2],-2*N[1]*N[2],1-2*N[2]*N[2],0,
+            2*NdotQ*N[0],2*NdotQ*N[1],2*NdotQ*N[2],1
         ]);
         return reflectionMatrix;
-        function dot(N, Q) {
+        function dot(N,Q) {
             var res = 0;
-            for (var i = 0; i < 3; i++) {
+            for(var i = 0; i < 3; i++) {
                 res = res + N[i] * Q[i];
             }
             return res;
@@ -189,17 +189,6 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
         return drawables;
     }
 
-    function isPowerOfTwo(x) {
-        return (x & (x - 1)) == 0;
-    }
-
-    function nextHighestPowerOfTwo(x) {
-        --x;
-        for (var i = 1; i < 32; i <<= 1) {
-            x = x | x >> i;
-        }
-        return x + 1;
-    }
 
     function loadDiffuseTextures() {
         function setTexture(gl, textureFileName) {
@@ -212,6 +201,18 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
             img.onload =  //function() { imagecount--; console.log(textureFileName+" loaded");createImageBuffer(img, tex, gl.TEXTURE_2D); };
 
                 function () {
+                    function isPowerOfTwo(x) {
+                        return (x & (x - 1)) == 0;
+                    }
+
+                    function nextHighestPowerOfTwo(x) {
+                        --x;
+                        for (var i = 1; i < 32; i <<= 1) {
+                            x = x | x >> i;
+                        }
+                        return x + 1;
+                    }
+
                     var nPOT = false; // nPOT: notPowerOfTwo
                     //console.log(textureFileName+" loaded : "+img.width+"x"+img.height);
                     tex.complete = img.complete;
@@ -265,6 +266,7 @@ function JsonRenderable(gl, program, modelPath, modelfilename) {
         }
         return texObjs;
     }
+
 
     function Drawable(attribLocations, vArrays, nElements, nVertices, indexArray, drawMode) {
         // Create a buffer object
