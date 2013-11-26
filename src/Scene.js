@@ -38,37 +38,19 @@ function Scene() {
         sunNum.innerHTML = sunAngle.toFixed(1).toString();
         document.getElementById("sun").value = sunAngle;
 
-        models[0].model.draw(models[0].mMatrix, models[0].Translate, lightPosition, false); // Draw plane
+        models[0].model.draw(models[0].mMatrix, models[0].Translate, lightPosition, 3, floodFlag); // Draw plane
 
         // Draw all shadows
         for (var i = 1; i < models.length; i++) {
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, true);
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 1, false);
         }
         // Draw all models
         for (var i = 1; i < models.length; i++) {
-            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, false);
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 2, false); //reflection
+            models[i].model.draw(models[i].mMatrix, models[i].Translate, lightPosition, 3, false); //model
         }
 
     };
 
-    function reflectionMatrix(min) {
-        var N = [0,1,0];
-        var Q = min; //a point on plane
-        var NdotQ = dot(N,Q);
-
-        reflectionMatrix.elements = new Float32Array([
-            1-2*N[0]*N[0],-2*N[1]*N[0],-2*N[2]*N[0],0,
-            -2*N[0]*N[1],1-2*N[1]*N[1],-2*N[2]*N[1],0,
-            -2*N[0]*N[2],-2*N[1]*N[2],1-2*N[2]*N[2],0,
-            2*NdotQ*N[0],2*NdotQ*N[1],2*NdotQ*N[2],1
-        ]);
-    }
 }
 
-function dot(N,Q) {
-    var res = 0;
-    for(var i = 0; i < 3; i++) {
-        res = res + N[i] * Q[i];
-    }
-    return res;
-}
