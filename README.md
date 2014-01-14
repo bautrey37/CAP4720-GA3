@@ -1,7 +1,7 @@
-COP4720-GA2
+CAP4720-GA3
 ===========
 
-Computer Graphics Group Assignment 3 of Fall 2013 at UCF.
+Computer Graphics Group Project 3 of Fall 2013 at UCF.
 
 Team Members
 ====
